@@ -1,0 +1,53 @@
+version: '3'
+services:
+  mongo:
+    image: mongo:3.6.18-xenial
+    container_name: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    network_mode: host
+    volumes:
+      - $HOME/mongo:/data/db
+      
+   eureka:
+    image: eureka
+    container_name: eureka
+    deploy:
+      mode: replicated
+      replicas: 1
+    restart: always
+    ports:
+      - 8761:8761
+    network_mode: host    
+    
+  productCatalog:
+    image: productCatalog
+    container_name: productCatalog
+    depends_on:
+      - mongo
+      -eureka
+    restart: always
+    ports:
+      - 9090:9090
+    network_mode: host
+    deploy:
+      mode: replicated
+      replicas: 3
+      
+  orderService:
+    build: order-service/
+    image: order-service
+    container_name: order
+    depends_on:
+      - mongo
+      -productCatalog
+      -eureka
+    network_mode: "host"
+    hostname: localhost
+    restart: always
+    ports:
+      - 9091:9091
+    deploy:
+      mode: replicated
+      replicas: 2
