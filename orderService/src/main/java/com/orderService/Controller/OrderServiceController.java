@@ -42,7 +42,7 @@ public class OrderServiceController {
 	private Orders placeAnOrder(@RequestBody Products products) {
 		List<Product> Productcollect = getValidProducts(products);
 		Orders order = createOrder(products, Productcollect);
-		restTemplate.put("http://localhost:9090/api/productCatalog/updateQuantity", products);
+		restTemplate.put("http://productCatalog/api/productCatalog/updateQuantity", products);
 		return order;
 
 	}
@@ -67,7 +67,7 @@ public class OrderServiceController {
 		
 		List<Product> Productcollect = productList.stream().map(list -> {
 			Product product = restTemplate.getForObject(
-					"http://localhost:9090/api/productCatalog/products/" + list.getProductId(), Product.class);
+					"http://productCatalog/api/productCatalog/products/" + list.getProductId(), Product.class);
 			if (!(product.getAvailableQuantity() > 0) || !(list.getQuantity() <= product.getAvailableQuantity())) {
 				throw new ProductNotAvailableException("REQUESTED PRODUCT" +product.getName()+"IS Not AVAILABLE");
 							}
